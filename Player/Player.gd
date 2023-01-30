@@ -1,7 +1,7 @@
 extends KinematicBody2D
 
 var motion = Vector2(0,0)
-const SPEED = 1000
+const SPEED = 1500
 const GRAVITY = 300
 
 const UP = Vector2(0,-1) # negative -1 is up in godot
@@ -11,10 +11,10 @@ func _physics_process(delta: float) -> void:
 	apply_gravity()
 	jump()
 	move()
-	
+	animate()
+	move_and_slide(motion, UP)		
 
 
-	
 
 func apply_gravity():
 	if  is_on_floor():
@@ -22,7 +22,7 @@ func apply_gravity():
 	else:
 		motion.y += GRAVITY	
 func jump():
-		if Input.is_action_just_pressed("jump") and is_on_floor():
+		if Input.is_action_pressed("jump") and is_on_floor():
 			motion.y -= JUMP_SPEED
 func move():
 	if Input.is_action_pressed("left") and not  Input.is_action_pressed("right"):
@@ -31,4 +31,17 @@ func move():
 		motion.x = SPEED
 	else:
 		motion.x = 0	
-	move_and_slide(motion, UP)		
+
+func animate():
+	if motion.y < 0:
+		$AnimatedSprite.play("jump")
+	elif	 motion.x > 0:
+		$AnimatedSprite.play("walk")
+		$AnimatedSprite.flip_h = false
+	elif	 motion.x < 0:
+		$AnimatedSprite.play("walk")
+		$AnimatedSprite.flip_h = true	
+	else:
+		$AnimatedSprite.play("idle")	
+		
+	
